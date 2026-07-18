@@ -8,7 +8,7 @@ const SEGMENTS = {
 };
 
 export default function DavidsonPieCalculator() {
-  const [unitSystem, setUnitSystem] = useState('us'); // 'us' | 'si'
+  const [unitSystem, setUnitSystem] = useState('us');
   const [solveFor, setSolveFor] = useState('mass');
   const [inputs, setInputs] = useState({ mass: '', flow: '', conc: '150' });
 
@@ -23,21 +23,17 @@ export default function DavidsonPieCalculator() {
     const conc = parseFloat(inputs.conc);
     const k = labels.constant;
 
-    try {
-      if (solveFor === 'mass') {
-        if (!isFinite(flow) || !isFinite(conc)) return null;
-        return flow * conc * k;
-      }
-      if (solveFor === 'flow') {
-        if (!isFinite(mass) || !isFinite(conc) || conc === 0) return null;
-        return mass / (conc * k);
-      }
-      if (solveFor === 'conc') {
-        if (!isFinite(mass) || !isFinite(flow) || flow === 0) return null;
-        return mass / (flow * k);
-      }
-    } catch {
-      return null;
+    if (solveFor === 'mass') {
+      if (!isFinite(flow) || !isFinite(conc)) return null;
+      return flow * conc * k;
+    }
+    if (solveFor === 'flow') {
+      if (!isFinite(mass) || !isFinite(conc) || conc === 0) return null;
+      return mass / (conc * k);
+    }
+    if (solveFor === 'conc') {
+      if (!isFinite(mass) || !isFinite(flow) || flow === 0) return null;
+      return mass / (flow * k);
     }
     return null;
   }, [inputs, solveFor, labels.constant]);
@@ -60,24 +56,22 @@ export default function DavidsonPieCalculator() {
   }, [result, solveFor, unitSystem]);
 
   return (
-    <div className="min-h-screen bg-[#10161D] text-[#E7EAEE] font-sans p-6 flex flex-col items-center">
-      <div className="w-full max-w-3xl">
-        <header className="mb-6 border-b border-[#2A3441] pb-4">
-          <p className="text-xs tracking-[0.25em] uppercase text-[#E8A33D] font-mono">
-            SiteGuard / Dosing Instrument
-          </p>
-          <h1 className="text-2xl font-semibold mt-1">Davidson Pie Calculator</h1>
-          <p className="text-sm text-[#8B98A8] mt-1">
+    <div style={s.app}>
+      <div style={s.wrap}>
+        <header style={s.header}>
+          <p style={s.eyebrow}>SiteGuard / Dosing Instrument</p>
+          <h1 style={s.title}>Davidson Pie Calculator</h1>
+          <p style={s.subtitle}>
             Mass loading = Flow × Concentration × constant. Solve any one value from the other two.
           </p>
         </header>
 
-        <div className="flex flex-col md:flex-row gap-8">
-          <div className="flex-shrink-0 mx-auto">
+        <div style={s.grid}>
+          <div style={s.dialWrap}>
             <PieDial solveFor={solveFor} onSelect={setSolveFor} labels={labels} />
           </div>
 
-          <div className="flex-1 space-y-5">
+          <div style={s.controls}>
             <UnitToggle unitSystem={unitSystem} onChange={setUnitSystem} />
 
             {Object.values(SEGMENTS).map((seg) => (
@@ -109,43 +103,42 @@ export default function DavidsonPieCalculator() {
 }
 
 function PieDial({ solveFor, onSelect, labels }) {
-  const isActive = (key) => solveFor === key;
-  const seg = (key) =>
-    `cursor-pointer transition-colors duration-150 ${
-      isActive(key) ? 'fill-[#E8A33D]' : 'fill-[#1B2530] hover:fill-[#243040]'
-    }`;
+  const fill = (key) => (solveFor === key ? '#F5A623' : '#1C2321');
 
   return (
     <svg width="220" height="220" viewBox="0 0 220 220" role="img" aria-label="Davidson pie selector">
-      <circle cx="110" cy="110" r="105" fill="#0C1116" stroke="#2A3441" strokeWidth="2" />
+      <circle cx="110" cy="110" r="105" fill="#0F1412" stroke="#2A322F" strokeWidth="2" />
       <path
         d="M 10 110 A 100 100 0 0 1 210 110 Z"
-        className={seg('mass')}
+        fill={fill('mass')}
+        style={{ cursor: 'pointer' }}
         onClick={() => onSelect('mass')}
       />
       <path
         d="M 10 110 A 100 100 0 0 0 110 210 L 110 110 Z"
-        className={seg('flow')}
+        fill={fill('flow')}
+        style={{ cursor: 'pointer' }}
         onClick={() => onSelect('flow')}
       />
       <path
         d="M 110 210 A 100 100 0 0 0 210 110 L 110 110 Z"
-        className={seg('conc')}
+        fill={fill('conc')}
+        style={{ cursor: 'pointer' }}
         onClick={() => onSelect('conc')}
       />
-      <line x1="10" y1="110" x2="210" y2="110" stroke="#0C1116" strokeWidth="2" />
-      <line x1="110" y1="110" x2="110" y2="210" stroke="#0C1116" strokeWidth="2" />
+      <line x1="10" y1="110" x2="210" y2="110" stroke="#0F1412" strokeWidth="2" />
+      <line x1="110" y1="110" x2="110" y2="210" stroke="#0F1412" strokeWidth="2" />
 
-      <text x="110" y="65" textAnchor="middle" fill="#E7EAEE" fontSize="13" fontFamily="ui-monospace, monospace">
+      <text x="110" y="65" textAnchor="middle" fill="#ECE8E1" fontSize="13" fontFamily="'IBM Plex Mono', monospace">
         {labels.mass}
       </text>
-      <text x="60" y="160" textAnchor="middle" fill="#E7EAEE" fontSize="13" fontFamily="ui-monospace, monospace">
+      <text x="60" y="160" textAnchor="middle" fill="#ECE8E1" fontSize="13" fontFamily="'IBM Plex Mono', monospace">
         {labels.flow}
       </text>
-      <text x="160" y="160" textAnchor="middle" fill="#E7EAEE" fontSize="13" fontFamily="ui-monospace, monospace">
+      <text x="160" y="160" textAnchor="middle" fill="#ECE8E1" fontSize="13" fontFamily="'IBM Plex Mono', monospace">
         {labels.conc}
       </text>
-      <text x="110" y="185" textAnchor="middle" fill="#8B98A8" fontSize="11" fontFamily="ui-monospace, monospace">
+      <text x="110" y="185" textAnchor="middle" fill="#7A8B85" fontSize="11" fontFamily="'IBM Plex Mono', monospace">
         ×{labels.constant}
       </text>
     </svg>
@@ -154,16 +147,17 @@ function PieDial({ solveFor, onSelect, labels }) {
 
 function UnitToggle({ unitSystem, onChange }) {
   return (
-    <div className="flex items-center gap-2 text-sm">
-      <span className="text-[#8B98A8] font-mono uppercase text-xs tracking-wide">Units</span>
-      <div className="flex rounded-md overflow-hidden border border-[#2A3441]">
+    <div style={s.toggleRow}>
+      <span style={s.toggleLabel}>Units</span>
+      <div style={s.toggleGroup}>
         {['us', 'si'].map((u) => (
           <button
             key={u}
             onClick={() => onChange(u)}
-            className={`px-3 py-1.5 text-xs font-mono uppercase tracking-wide ${
-              unitSystem === u ? 'bg-[#E8A33D] text-[#10161D]' : 'bg-[#161D25] text-[#8B98A8]'
-            }`}
+            style={{
+              ...s.toggleBtn,
+              ...(unitSystem === u ? s.toggleBtnActive : {}),
+            }}
           >
             {u === 'us' ? 'US (MGD/lb)' : 'SI (m³/kg)'}
           </button>
@@ -175,29 +169,23 @@ function UnitToggle({ unitSystem, onChange }) {
 
 function FieldRow({ segment, unit, active, value, disabled, onChange, onSelectSolve }) {
   return (
-    <div className={`flex items-center justify-between gap-3 rounded-md px-3 py-2 border ${
-      active ? 'border-[#E8A33D] bg-[#1B1610]' : 'border-[#2A3441] bg-[#141A21]'
-    }`}>
+    <div style={{ ...s.fieldRow, ...(active ? s.fieldRowActive : {}) }}>
       <div>
-        <p className="text-sm">{segment.label}</p>
-        <p className="text-xs text-[#8B98A8] font-mono">{unit}</p>
+        <p style={s.fieldLabel}>{segment.label}</p>
+        <p style={s.fieldUnit}>{unit}</p>
       </div>
       {active ? (
-        <span className="text-xs font-mono text-[#E8A33D] uppercase">Solving</span>
+        <span style={s.solvingTag}>Solving</span>
       ) : (
-        <div className="flex items-center gap-2">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <input
             type="number"
             value={value}
             disabled={disabled}
             onChange={(e) => onChange(e.target.value)}
-            className="w-28 bg-[#0C1116] border border-[#2A3441] rounded px-2 py-1 text-right font-mono text-sm focus:outline-none focus:border-[#E8A33D]"
+            style={s.input}
           />
-          <button
-            onClick={onSelectSolve}
-            className="text-xs text-[#8B98A8] hover:text-[#E8A33D] font-mono"
-            title="Solve for this instead"
-          >
+          <button onClick={onSelectSolve} style={s.solveLink} title="Solve for this instead">
             solve
           </button>
         </div>
@@ -208,33 +196,151 @@ function FieldRow({ segment, unit, active, value, disabled, onChange, onSelectSo
 
 function ReadoutBox({ label, unit, value, crossCheck }) {
   return (
-    <div className="rounded-md border border-[#2A3441] bg-[#0C1116] px-4 py-3">
-      <p className="text-xs text-[#8B98A8] font-mono uppercase tracking-wide">{label} result</p>
-      <p className="text-3xl font-mono text-[#E8A33D] mt-1">
+    <div style={s.readout}>
+      <p style={s.readoutLabel}>{label} result</p>
+      <p style={s.readoutValue}>
         {value == null ? '—' : value.toLocaleString(undefined, { maximumFractionDigits: 3 })}
-        <span className="text-base text-[#8B98A8] ml-2">{unit}</span>
+        <span style={s.readoutUnit}> {unit}</span>
       </p>
-      {crossCheck && (
-        <p className="text-xs text-[#8B98A8] font-mono mt-1">≈ {crossCheck}</p>
-      )}
+      {crossCheck && <p style={s.crossCheck}>≈ {crossCheck}</p>}
     </div>
   );
 }
 
 function ReferenceTable() {
   return (
-    <div className="mt-8 border-t border-[#2A3441] pt-4">
-      <p className="text-xs text-[#8B98A8] font-mono uppercase tracking-wide mb-2">
-        Worldwide conversion reference
-      </p>
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs font-mono text-[#8B98A8]">
+    <div style={s.refWrap}>
+      <p style={s.refTitle}>Worldwide conversion reference</p>
+      <div style={s.refGrid}>
         {REFERENCE_TABLE.map((row) => (
-          <div key={row.label} className="flex justify-between border-b border-[#1B2530] pb-1">
+          <div key={row.label} style={s.refRow}>
             <span>{row.label}</span>
-            <span className="text-[#E7EAEE]">×{row.factor}</span>
+            <span style={{ color: '#ECE8E1' }}>×{row.factor}</span>
           </div>
         ))}
       </div>
     </div>
   );
 }
+
+const s = {
+  app: {
+    fontFamily: "'Inter', sans-serif",
+    background: '#161B19',
+    color: '#ECE8E1',
+    minHeight: '100vh',
+    padding: 20,
+  },
+  wrap: { maxWidth: 760, margin: '0 auto' },
+  header: { marginBottom: 24, borderBottom: '1px solid #2A322F', paddingBottom: 14 },
+  eyebrow: {
+    fontSize: 11,
+    letterSpacing: '0.2em',
+    textTransform: 'uppercase',
+    color: '#F5A623',
+    fontFamily: "'IBM Plex Mono', monospace",
+    margin: 0,
+  },
+  title: {
+    fontFamily: "'Space Grotesk', sans-serif",
+    fontSize: 24,
+    fontWeight: 700,
+    margin: '6px 0 4px 0',
+  },
+  subtitle: { fontSize: 13, color: '#7A8B85', margin: 0 },
+  grid: { display: 'flex', flexWrap: 'wrap', gap: 28, marginBottom: 24 },
+  dialWrap: { flexShrink: 0, margin: '0 auto' },
+  controls: { flex: 1, minWidth: 260, display: 'flex', flexDirection: 'column', gap: 14 },
+  toggleRow: { display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 },
+  toggleLabel: {
+    color: '#7A8B85',
+    fontFamily: "'IBM Plex Mono', monospace",
+    textTransform: 'uppercase',
+    fontSize: 11,
+    letterSpacing: '0.05em',
+  },
+  toggleGroup: { display: 'flex', borderRadius: 6, overflow: 'hidden', border: '1px solid #2A322F' },
+  toggleBtn: {
+    padding: '7px 12px',
+    fontSize: 11.5,
+    fontFamily: "'IBM Plex Mono', monospace",
+    textTransform: 'uppercase',
+    background: '#1C2321',
+    color: '#7A8B85',
+    border: 'none',
+    cursor: 'pointer',
+  },
+  toggleBtnActive: { background: '#F5A623', color: '#2A2005', fontWeight: 700 },
+  fieldRow: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+    borderRadius: 8,
+    padding: '10px 14px',
+    border: '1px solid #2A322F',
+    background: '#1C2321',
+  },
+  fieldRowActive: { borderColor: '#F5A623', background: '#241D12' },
+  fieldLabel: { fontSize: 13.5, margin: 0, color: '#ECE8E1' },
+  fieldUnit: { fontSize: 11.5, margin: '2px 0 0 0', color: '#7A8B85', fontFamily: "'IBM Plex Mono', monospace" },
+  solvingTag: {
+    fontSize: 11,
+    fontFamily: "'IBM Plex Mono', monospace",
+    color: '#F5A623',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em',
+  },
+  input: {
+    width: 110,
+    background: '#0F1412',
+    border: '1px solid #2A322F',
+    borderRadius: 6,
+    padding: '6px 8px',
+    textAlign: 'right',
+    color: '#ECE8E1',
+    fontFamily: "'IBM Plex Mono', monospace",
+    fontSize: 13,
+  },
+  solveLink: {
+    fontSize: 11,
+    color: '#7A8B85',
+    background: 'transparent',
+    border: 'none',
+    cursor: 'pointer',
+    fontFamily: "'IBM Plex Mono', monospace",
+  },
+  readout: {
+    borderRadius: 8,
+    border: '1px solid #2A322F',
+    background: '#0F1412',
+    padding: '14px 16px',
+  },
+  readoutLabel: {
+    fontSize: 11,
+    color: '#7A8B85',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em',
+    fontFamily: "'IBM Plex Mono', monospace",
+    margin: 0,
+  },
+  readoutValue: {
+    fontSize: 30,
+    fontFamily: "'IBM Plex Mono', monospace",
+    color: '#F5A623',
+    margin: '6px 0 0 0',
+  },
+  readoutUnit: { fontSize: 15, color: '#7A8B85' },
+  crossCheck: { fontSize: 11.5, color: '#7A8B85', fontFamily: "'IBM Plex Mono', monospace", margin: '4px 0 0 0' },
+  refWrap: { marginTop: 26, borderTop: '1px solid #2A322F', paddingTop: 14 },
+  refTitle: {
+    fontSize: 11,
+    color: '#7A8B85',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em',
+    fontFamily: "'IBM Plex Mono', monospace",
+    marginBottom: 8,
+  },
+  refGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 8, fontSize: 11.5, color: '#7A8B85', fontFamily: "'IBM Plex Mono', monospace" },
+  refRow: { display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #1F2624', paddingBottom: 4 },
+};
