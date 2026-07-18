@@ -3,7 +3,7 @@ import {
   Plus, Trash2, Download, AlertTriangle, ShieldCheck, ClipboardList,
   Camera, Loader2, Leaf, Sparkles, X, ImagePlus,
 } from "lucide-react";
-
+import DavidsonPieCalculator from "../components/DavidsonPieCalculator";
 const CATEGORIES = [
   "Chemical", "Mechanical", "Electrical", "Fire/Explosion",
   "Ergonomic", "Biological", "Environmental", "Fall/Slip", "Other",
@@ -59,7 +59,7 @@ function extractVideoFrame(file) {
   });
 }
 
-export default function RiskMatrix() {
+ function RiskMatrix() {
   const [assessments, setAssessments] = useState(null); // null = loading
   const [activeId, setActiveId] = useState(null);
   const [saveState, setSaveState] = useState("idle"); // idle | saving | saved | error
@@ -924,3 +924,37 @@ const styles = {
   hazardDesc: { fontSize: 13.5, color: "#ECE8E1" },
   hazardMeta: { fontSize: 11.5, color: "#7A8B85", marginTop: 2 },
 };
+const tabStyle = {
+  background: "transparent",
+  border: "1px solid #3A443F",
+  color: "#B8C2BE",
+  borderRadius: 6,
+  padding: "6px 12px",
+  fontSize: 12.5,
+  cursor: "pointer",
+  fontFamily: "'Inter', sans-serif",
+};
+
+const tabActive = {
+  background: "#F5A623",
+  color: "#2A2005",
+  borderColor: "#F5A623",
+  fontWeight: 600,
+};
+
+export default function App() {
+  const [view, setView] = useState("risk");
+  return (
+    <div>
+      <div style={{ display: "flex", gap: 8, padding: "10px 20px", background: "#1C2321", borderBottom: "1px solid #2A322F" }}>
+        <button style={{ ...tabStyle, ...(view === "risk" ? tabActive : {}) }} onClick={() => setView("risk")}>
+          Risk Matrix
+        </button>
+        <button style={{ ...tabStyle, ...(view === "davidson" ? tabActive : {}) }} onClick={() => setView("davidson")}>
+          Davidson Pie
+        </button>
+      </div>
+      {view === "risk" ? <RiskMatrix /> : <DavidsonPieCalculator />}
+    </div>
+  );
+}
