@@ -10,7 +10,7 @@ const SEGMENTS = {
 export default function DavidsonPieCalculator() {
   const [unitSystem, setUnitSystem] = useState('us');
   const [solveFor, setSolveFor] = useState('mass');
-  const [inputs, setInputs] = useState({ mass: '', flow: '', conc: '150' });
+  const [inputs, setInputs] = useState({ mass: '', flow: '', conc: '' });
 
   const labels =
     unitSystem === 'us'
